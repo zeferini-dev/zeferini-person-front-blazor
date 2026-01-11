@@ -1,0 +1,170 @@
+@page "/persons/new"
+@page "/persons/{Id}/edit"
+@inject PersonService PersonService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<PageTitle>@(IsEdit ? "Editar" : "Nova") Pessoa - TesteFull Blazor</PageTitle>
+
+<div class="person-form">
+    <div class="d-flex align-center mb-4">
+        <MudIcon Icon="@(IsEdit ? Icons.Material.Filled.Edit : Icons.Material.Filled.PersonAdd)" 
+                 Size="Size.Large" Class="mr-2" Color="Color.Primary" />
+        <MudText Typo="Typo.h4">@(IsEdit ? "Editar" : "Nova") Pessoa</MudText>
+    </div>
+
+    <MudCard Outlined="true">
+        @if (_loading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+        }
+        
+        <MudCardContent>
+            <EditForm Model="_model" OnValidSubmit="OnSubmit">
+                <DataAnnotationsValidator />
+                
+                <MudTextField @bind-Value="_model.Name"
+                              Label="Nome completo"
+                              Placeholder="Digite o nome completo"
+                              Variant="Variant.Outlined"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Person"
+                              Required="true"
+                              RequiredError="Este campo é obrigatório"
+                              MaxLength="120"
+                              Counter="120"
+                              Immediate="true"
+                              Class="mb-4"
+                              Disabled="_loading || _saving" />
+                
+                <MudTextField @bind-Value="_model.Email"
+                              Label="E-mail"
+                              Placeholder="exemplo@email.com"
+                              Variant="Variant.Outlined"
+                              InputType="InputType.Email"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Email"
+                              Required="true"
+                              RequiredError="Este campo é obrigatório"
+                              MaxLength="180"
+                              Counter="180"
+                              Immediate="true"
+                              Class="mb-4"
+                              Disabled="_loading || _saving" />
+                
+                <div class="d-flex gap-2 mt-4">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               ButtonType="ButtonType.Submit"
+                               StartIcon="@(_saving ? Icons.Material.Filled.HourglassEmpty : Icons.Material.Filled.Save)"
+                               Disabled="_saving || _loading">
+                        @(_saving ? "Salvando..." : "Salvar")
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Default"
+                               StartIcon="@Icons.Material.Filled.Cancel"
+                               Href="/persons"
+                               Disabled="_saving">
+                        Cancelar
+                    </MudButton>
+                </div>
+            </EditForm>
+        </MudCardContent>
+    </MudCard>
+
+    <MudPaper Elevation="0" Class="pa-4 mt-4 d-flex align-center" Style="background-color: #f5f5f5;">
+        <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Info" Class="mr-2" />
+        <MudText Typo="Typo.body2" Color="Color.Secondary">
+            Preencha todos os campos obrigatórios para continuar.
+        </MudText>
+    </MudPaper>
+</div>
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    private PersonFormModel _model = new();
+    private bool _loading = false;
+    private bool _saving = false;
+
+    private bool IsEdit => !string.IsNullOrEmpty(Id);
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (IsEdit)
+        {
+            await LoadPerson();
+        }
+    }
+
+    private async Task LoadPerson()
+    {
+        _loading = true;
+        try
+        {
+            var person = await PersonService.GetAsync(Id!);
+            if (person != null)
+            {
+                _model.Name = person.Name;
+                _model.Email = person.Email;
+            }
+            else
+            {
+                Snackbar.Add("Pessoa não encontrada", Severity.Error);
+                Navigation.NavigateTo("/persons");
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao carregar pessoa", Severity.Error);
+            Navigation.NavigateTo("/persons");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task OnSubmit()
+    {
+        _saving = true;
+        try
+        {
+            if (IsEdit)
+            {
+                await PersonService.UpdateAsync(Id!, new UpdatePerson
+                {
+                    Name = _model.Name,
+                    Email = _model.Email
+                });
+                Snackbar.Add("Pessoa atualizada com sucesso", Severity.Success);
+            }
+            else
+            {
+                await PersonService.CreateAsync(new CreatePerson
+                {
+                    Name = _model.Name,
+                    Email = _model.Email
+                });
+                Snackbar.Add("Pessoa criada com sucesso", Severity.Success);
+            }
+
+            Navigation.NavigateTo("/persons");
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao salvar pessoa", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private class PersonFormModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+    }
+}

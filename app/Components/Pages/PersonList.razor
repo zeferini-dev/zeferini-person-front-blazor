@@ -1,0 +1,164 @@
+@page "/persons"
+@inject PersonService PersonService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<PageTitle>Pessoas - TesteFull Blazor</PageTitle>
+
+<div class="person-list">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <div class="d-flex align-center">
+            <MudIcon Icon="@Icons.Material.Filled.Group" Size="Size.Large" Class="mr-2" Color="Color.Primary" />
+            <MudText Typo="Typo.h4">Pessoas</MudText>
+        </div>
+        <div class="d-flex gap-2">
+            <MudTooltip Text="Atualizar agora">
+                <MudIconButton Icon="@Icons.Material.Filled.Refresh" 
+                               Color="Color.Primary" 
+                               OnClick="LoadPersons"
+                               Disabled="_loading" />
+            </MudTooltip>
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       StartIcon="@Icons.Material.Filled.PersonAdd"
+                       Href="/persons/new">
+                Nova Pessoa
+            </MudButton>
+        </div>
+    </div>
+
+    @if (_loading)
+    {
+        <MudPaper Class="pa-8 d-flex flex-column align-center justify-center" Elevation="0">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+            <MudText Typo="Typo.body1" Class="mt-4">Carregando pessoas...</MudText>
+        </MudPaper>
+    }
+    else if (_persons.Count == 0)
+    {
+        <MudCard Outlined="true" Class="pa-8 text-center">
+            <MudCardContent>
+                <MudIcon Icon="@Icons.Material.Filled.SentimentDissatisfied" Size="Size.Large" Color="Color.Secondary" />
+                <MudText Typo="Typo.h6" Class="mt-4">Nenhuma pessoa cadastrada</MudText>
+                <MudText Typo="Typo.body2" Class="mt-2 mb-4" Color="Color.Secondary">
+                    Comece adicionando a primeira pessoa ao sistema.
+                </MudText>
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.PersonAdd"
+                           Href="/persons/new">
+                    Adicionar Pessoa
+                </MudButton>
+            </MudCardContent>
+        </MudCard>
+    }
+    else
+    {
+        <MudCard Outlined="true">
+            <MudTable Items="_persons" Hover="true" Striped="true" Dense="false">
+                <HeaderContent>
+                    <MudTh>ID</MudTh>
+                    <MudTh>Nome</MudTh>
+                    <MudTh>E-mail</MudTh>
+                    <MudTh Style="text-align: right;">Ações</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="ID">@context.Id</MudTd>
+                    <MudTd DataLabel="Nome"><strong>@context.Name</strong></MudTd>
+                    <MudTd DataLabel="E-mail">
+                        <MudLink Href="@($"mailto:{context.Email}")" Color="Color.Primary">
+                            @context.Email
+                        </MudLink>
+                    </MudTd>
+                    <MudTd DataLabel="Ações" Style="text-align: right;">
+                        <MudTooltip Text="Editar pessoa">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                           Color="Color.Primary"
+                                           Href="@($"/persons/{context.Id}/edit")" />
+                        </MudTooltip>
+                        <MudTooltip Text="Excluir pessoa">
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                           Color="Color.Error"
+                                           OnClick="@(() => OnDelete(context))" />
+                        </MudTooltip>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudCard>
+    }
+</div>
+
+@code {
+    private List<Person> _persons = [];
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        PersonService.OnDataChanged += OnDataChanged;
+        await LoadPersons();
+    }
+
+    private async void OnDataChanged()
+    {
+        await InvokeAsync(async () =>
+        {
+            await LoadPersons();
+            StateHasChanged();
+        });
+    }
+
+    private async Task LoadPersons()
+    {
+        _loading = true;
+        StateHasChanged();
+        
+        try
+        {
+            _persons = await PersonService.ListAsync();
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao carregar pessoas", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnDelete(Person person)
+    {
+        var parameters = new DialogParameters<ConfirmDialog>
+        {
+            { x => x.ContentText, $"Deseja realmente excluir {person.Name}?" },
+            { x => x.ButtonText, "Excluir" },
+            { x => x.Color, Color.Error }
+        };
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small };
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>("Confirmar exclusão", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            try
+            {
+                await PersonService.RemoveAsync(person.Id);
+                Snackbar.Add("Pessoa excluída com sucesso", Severity.Success);
+                await LoadPersons();
+            }
+            catch (Exception)
+            {
+                Snackbar.Add("Erro ao excluir pessoa", Severity.Error);
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        PersonService.OnDataChanged -= OnDataChanged;
+    }
+}

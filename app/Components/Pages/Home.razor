@@ -1,0 +1,16 @@
+﻿@page "/"
+
+<PageTitle>Home - TesteFull Blazor</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
+    <MudPaper Elevation="2" Class="pa-8 text-center">
+        <MudIcon Icon="@Icons.Material.Filled.Home" Size="Size.Large" Color="Color.Primary" Class="mb-4" />
+        <MudText Typo="Typo.h4" Class="mb-4">Bem-vindo ao TesteFull</MudText>
+        <MudText Typo="Typo.body1" Class="mb-6" Color="Color.Secondary">
+            Aplicação Blazor Server com .NET 10 e MudBlazor
+        </MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/persons" StartIcon="@Icons.Material.Filled.Group">
+            Ir para Pessoas
+        </MudButton>
+    </MudPaper>
+</MudContainer>
