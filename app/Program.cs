@@ -11,11 +11,13 @@ builder.Services.AddRazorComponents()
 // Adicionar MudBlazor
 builder.Services.AddMudServices();
 
-// Configurar API
+// Configurar API via Gateway
 builder.Services.Configure<ApiConfiguration>(options =>
 {
-    options.CommandUrl = builder.Configuration.GetValue<string>("Api:CommandUrl") ?? "http://localhost:3000";
-    options.QueryUrl = builder.Configuration.GetValue<string>("Api:QueryUrl") ?? "http://localhost:3001";
+    var gatewayUrl = builder.Configuration.GetValue<string>("Api:GatewayUrl") ?? "http://localhost:8084";
+    options.GatewayUrl = gatewayUrl;
+    options.CommandUrl = builder.Configuration.GetValue<string>("Api:CommandUrl") ?? $"{gatewayUrl}/api/persons";
+    options.QueryUrl = builder.Configuration.GetValue<string>("Api:QueryUrl") ?? $"{gatewayUrl}/api/query";
 });
 
 // Adicionar HttpClient e PersonService

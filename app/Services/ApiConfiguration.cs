@@ -1,17 +1,22 @@
 namespace first.Services;
 
 /// <summary>
-/// Configuração das URLs das APIs
+/// Configuração das URLs das APIs via Gateway
 /// </summary>
 public class ApiConfiguration
 {
     /// <summary>
-    /// API de escrita (comandos): MySQL - porta 3000
+    /// URL base do API Gateway
     /// </summary>
-    public string CommandUrl { get; set; } = "http://localhost:3000";
+    public string GatewayUrl { get; set; } = "http://localhost:8084";
 
     /// <summary>
-    /// API de leitura (queries): MongoDB - porta 3001
+    /// API de escrita (comandos): via Gateway -> Load Balanced
     /// </summary>
-    public string QueryUrl { get; set; } = "http://localhost:3001";
+    public string CommandUrl { get; set; } = "http://localhost:8084/api/persons";
+
+    /// <summary>
+    /// API de leitura (queries): via Gateway -> MongoDB
+    /// </summary>
+    public string QueryUrl { get; set; } = "http://localhost:8084/api/query";
 }

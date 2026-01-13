@@ -14,7 +14,7 @@
         <MudText Typo="Typo.body1" Class="mr-4">Blazor</MudText>
         <MudSpacer />
         <MudTooltip Text="API Docs">
-            <MudIconButton Icon="@Icons.Material.Filled.Description" Color="Color.Inherit" Href="http://localhost:3000/api" Target="_blank" />
+            <MudIconButton Icon="@Icons.Material.Filled.Description" Color="Color.Inherit" Href="http://localhost:8084/swagger/nestjs" Target="_blank" />
         </MudTooltip>
     </MudAppBar>
 
@@ -25,10 +25,10 @@
             <MudNavLink Href="/persons" Icon="@Icons.Material.Filled.Group" Match="NavLinkMatch.Prefix">Pessoas</MudNavLink>
             
             <MudText Typo="Typo.subtitle2" Class="px-4 mt-4 mb-2" Style="color: gray;">APIs</MudText>
-            <MudNavLink Href="http://localhost:3000/api" Target="_blank" Icon="@Icons.Material.Filled.Description">API Docs</MudNavLink>
-            <MudNavLink Href="http://localhost:3000/openapi.json" Target="_blank" Icon="@Icons.Material.Filled.DataObject">API JSON</MudNavLink>
-            <MudNavLink Href="http://localhost:3000/persons" Target="_blank" Icon="@Icons.Material.Filled.List">API Persons</MudNavLink>
-            <MudNavLink Href="http://localhost:3000/" Target="_blank" Icon="@Icons.Material.Filled.Home">API Root</MudNavLink>
+            <MudNavLink Href="http://localhost:8084/" Target="_blank" Icon="@Icons.Material.Filled.Hub">API Gateway</MudNavLink>
+            <MudNavLink Href="http://localhost:8084/swagger/nestjs" Target="_blank" Icon="@Icons.Material.Filled.Description">Swagger NestJS</MudNavLink>
+            <MudNavLink Href="http://localhost:8084/swagger/dotnet" Target="_blank" Icon="@Icons.Material.Filled.Code">Swagger .NET</MudNavLink>
+            <MudNavLink Href="http://localhost:8084/api/persons" Target="_blank" Icon="@Icons.Material.Filled.List">API Persons</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
 

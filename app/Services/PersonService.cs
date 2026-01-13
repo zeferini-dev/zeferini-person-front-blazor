@@ -6,13 +6,14 @@ namespace first.Services;
 
 /// <summary>
 /// Serviço para gerenciar operações CRUD de Pessoa
-/// Implementa CQRS: Commands → MySQL (porta 3000), Queries → MongoDB (porta 3001)
+/// Implementa CQRS via API Gateway: Commands → Load Balanced, Queries → MongoDB
 /// </summary>
 public class PersonService
 {
     private readonly HttpClient _httpClient;
     private readonly ApiConfiguration _apiConfig;
-    private string CommandResource => $"{_apiConfig.CommandUrl}/persons";
+    // Command URL já inclui /api/persons, Query URL inclui /api/query
+    private string CommandResource => _apiConfig.CommandUrl;
     private string QueryResource => $"{_apiConfig.QueryUrl}/persons";
 
     // Evento para notificar que os dados foram alterados
