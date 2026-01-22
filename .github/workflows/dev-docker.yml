@@ -52,22 +52,22 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - name: Restore dependencies
-        run: dotnet restore src/zeferini-person-front-blazor.sln
+        run: dotnet restore src/zeferini-person-front-blazor/zeferini-person-front-blazor.sln
       - name: Verificar sucesso do restore
         run: |
           if [ ! -f src/zeferini-person-front-blazor/obj/project.assets.json ]; then
             echo "Restore falhou: project.assets.json não encontrado."
             exit 1
           fi
-          if [ ! -f src/zeferini-person-front-blazor.Tests/obj/project.assets.json ]; then
+          if [ ! -f src/zeferini-person-front-blazor/zeferini-person-front-blazor.tests/obj/project.assets.json ]; then
             echo "Restore falhou: project.assets.json dos testes não encontrado."
             exit 1
           fi
           echo "Restore concluído com sucesso."
       - name: Build
-        run: dotnet build src/zeferini-person-front-blazor.sln --no-restore
+        run: dotnet build src/zeferini-person-front-blazor/zeferini-person-front-blazor.sln --no-restore
       - name: Test
-        run: dotnet test src/zeferini-person-front-blazor.sln --no-build --verbosity normal
+        run: dotnet test src/zeferini-person-front-blazor/zeferini-person-front-blazor.sln --no-build --verbosity normal
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
