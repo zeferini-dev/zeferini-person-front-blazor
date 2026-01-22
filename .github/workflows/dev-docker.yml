@@ -60,7 +60,7 @@ jobs:
             echo "Restore falhou: project.assets.json não encontrado."
             exit 1
           fi
-          if [ ! -f src/zeferini-person-front-blazor/zeferini-person-front-blazor.tests/obj/project.assets.json ]; then
+          if [ ! -f src/zeferini-person-front-blazor/zeferini-person-front-blazor.Tests/obj/project.assets.json ]; then
             echo "Restore falhou: project.assets.json dos testes não encontrado."
             exit 1
           fi
