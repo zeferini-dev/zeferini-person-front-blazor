@@ -3,7 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36811.4 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "first", "..\..\app\first.csproj", "{EB46630B-C980-4212-6707-97657FC7B894}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zeferini-person-front-blazor.tests", "zeferini-person-front-blazor.tests\zeferini-person-front-blazor.tests.csproj", "{D5CDAAF1-4F44-451E-B771-B01FE177D8F0}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB46630B-C980-4212-6707-97657FC7B894}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB46630B-C980-4212-6707-97657FC7B894}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB46630B-C980-4212-6707-97657FC7B894}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB46630B-C980-4212-6707-97657FC7B894}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5CDAAF1-4F44-451E-B771-B01FE177D8F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5CDAAF1-4F44-451E-B771-B01FE177D8F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5CDAAF1-4F44-451E-B771-B01FE177D8F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5CDAAF1-4F44-451E-B771-B01FE177D8F0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
