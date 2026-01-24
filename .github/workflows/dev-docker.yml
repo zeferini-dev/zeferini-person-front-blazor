@@ -103,11 +103,10 @@ jobs:
           token: ${{ secrets.GH_PAT || github.token }}
       # Commit automático removido para evitar conflitos e alterações inesperadas
       - name: Create Pull Request to develop
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GH_PAT || github.token }}
-          base: develop
-          branch: ${{ github.ref_name }}
-          title: 'Merge feature ${{ github.ref_name }} into develop'
-          body: 'PR automática criada pelo CI após build, test e publish da imagem dev.'
-          draft: false
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT || github.token }}
+        run: |
+          gh pr create --base develop --head ${{ github.ref_name }} \
+            --title "Merge feature ${{ github.ref_name }} into develop" \
+            --body "PR automática criada pelo CI após build, test e publish da imagem dev." \
+            || echo "PR já existe ou não pôde ser criada."
