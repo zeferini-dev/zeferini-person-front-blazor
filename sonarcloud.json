@@ -2,5 +2,6 @@
   "sonarcloud": {
     "organization": "zeferini-dev",
     "projectKey": "zeferini-dev_zeferini-person-front-blazor"
-  }
+  },
+  "sonar.host.url": "https://sonarcloud.io"
 }

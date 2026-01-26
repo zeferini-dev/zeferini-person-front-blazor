@@ -8,7 +8,7 @@ on:
 env:
   REGISTRY: dockerhub
   IMAGE_NAME: zeferinidotdev/zeferini-person-front-blazor-dev
-  DOTNET_VERSION: 8.0.x
+  DOTNET_VERSION: 10.0.x
   SOLUTION_PATH: src/zeferini-person-front-blazor/zeferini-person-front-blazor.sln
 
 jobs:

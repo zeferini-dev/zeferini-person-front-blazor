@@ -8,7 +8,7 @@ on:
 env:
   REGISTRY: dockerhub
   IMAGE_NAME: zeferinidotdev/zeferini-person-front-blazor-hom
-  DOTNET_VERSION: 8.0.x
+  DOTNET_VERSION: 10.0.x
   SOLUTION_PATH: src/zeferini-person-front-blazor/zeferini-person-front-blazor.sln
   COVERAGE_OUTPUT: src/zeferini-person-front-blazor/TestResults/coverage.xml
 
@@ -76,6 +76,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet sonarscanner begin \
+            /k:"zeferini-dev_zeferini-person-front-blazor" \
+            /o:"zeferini-dev" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.cs.opencover.reportsPaths="${{ env.COVERAGE_OUTPUT }}"
 
