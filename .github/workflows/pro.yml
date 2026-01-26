@@ -108,8 +108,8 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.PRO_DOCKERHUB_USERNAME }}
-          password: ${{ secrets.PRO_DOCKERHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
         run: |
@@ -117,8 +117,8 @@ jobs:
             --no-cache \
             -t ${{ env.IMAGE_NAME }}:v${{ steps.version.outputs.version }} \
             -t ${{ env.IMAGE_NAME }}:latest \
-            -f src/zeferini-person-front-blazor/app/Dockerfile \
-            src/zeferini-person-front-blazor/app
+            -f src/zeferini-person-front-blazor/zeferini-person-front-blazor/Dockerfile \
+            src/zeferini-person-front-blazor/zeferini-person-front-blazor
 
       - name: Push Docker image
         run: |

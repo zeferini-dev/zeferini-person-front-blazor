@@ -66,8 +66,8 @@ jobs:
             --no-cache \
             -t ${{ env.IMAGE_NAME }}:${{ steps.docker_tag.outputs.tag }} \
             -t ${{ env.IMAGE_NAME }}:latest \
-            -f src/zeferini-person-front-blazor/app/Dockerfile \
-            src/zeferini-person-front-blazor/app
+            -f src/zeferini-person-front-blazor/zeferini-person-front-blazor/Dockerfile \
+            src/zeferini-person-front-blazor/zeferini-person-front-blazor
 
       - name: Push Docker image
         run: |
