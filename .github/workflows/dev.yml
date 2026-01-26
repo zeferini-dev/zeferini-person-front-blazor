@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+  workflow_dispatch:
 
 env:
   REGISTRY: dockerhub
@@ -43,6 +44,7 @@ jobs:
     name: Build & Push Docker (DEV)
     runs-on: ubuntu-latest
     needs: build-test
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && secrets.DEV_DOCKERHUB_USERNAME != '')
     
     steps:
       - name: Checkout code
