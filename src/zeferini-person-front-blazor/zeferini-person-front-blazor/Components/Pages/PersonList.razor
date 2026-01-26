@@ -1,3 +1,4 @@
+@namespace zeferini.person.front.blazor.Components.Pages
 @page "/persons"
 @inject PersonService PersonService
 @inject ISnackbar Snackbar
@@ -131,12 +132,10 @@
 
     private async Task OnDelete(Person person)
     {
-        var parameters = new DialogParameters<ConfirmDialog>
-        {
-            { x => x.ContentText, $"Deseja realmente excluir {person.Name}?" },
-            { x => x.ButtonText, "Excluir" },
-            { x => x.Color, Color.Error }
-        };
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", $"Deseja realmente excluir {person.Name}?");
+        parameters.Add("ButtonText", "Excluir");
+        parameters.Add("Color", Color.Error);
 
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small };
         var dialog = await DialogService.ShowAsync<ConfirmDialog>("Confirmar exclusão", parameters, options);

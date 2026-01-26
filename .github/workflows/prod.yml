@@ -1,0 +1,129 @@
+name: PRO - Build, Test, SonarCloud & Docker
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: dockerhub
+  IMAGE_NAME: zeferinidotdev/zeferini-person-front-blazor
+  DOTNET_VERSION: 8.0.x
+  SOLUTION_PATH: src/zeferini-person-front-blazor/zeferini-person-front-blazor.sln
+  COVERAGE_OUTPUT: src/zeferini-person-front-blazor/TestResults/coverage.xml
+
+jobs:
+  build-test-coverage:
+    name: Build & Test with Coverage (PRO)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Clean NuGet cache
+        run: dotnet nuget locals all --clear
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+
+      - name: Test with Coverage
+        run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=${{ env.COVERAGE_OUTPUT }}
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: src/zeferini-person-front-blazor/TestResults/
+
+  sonarcloud-analysis:
+    name: SonarCloud Analysis (PRO)
+    runs-on: ubuntu-latest
+    needs: build-test-coverage
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Clean NuGet cache
+        run: dotnet nuget locals all --clear
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+      - name: Install SonarCloud Scanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: SonarCloud Begin
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet sonarscanner begin \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.cs.opencover.reportsPaths="${{ env.COVERAGE_OUTPUT }}"
+
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+
+      - name: Test with Coverage
+        run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=${{ env.COVERAGE_OUTPUT }}
+
+      - name: SonarCloud End
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+  publish-docker:
+    name: Build & Push Docker (PRO)
+    runs-on: ubuntu-latest
+    needs: sonarcloud-analysis
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=$(git describe --tags --always)
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.PRO_DOCKERHUB_USERNAME }}
+          password: ${{ secrets.PRO_DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --no-cache \
+            -t ${{ env.IMAGE_NAME }}:v${{ steps.version.outputs.version }} \
+            -t ${{ env.IMAGE_NAME }}:latest \
+            -f src/zeferini-person-front-blazor/app/Dockerfile \
+            src/zeferini-person-front-blazor/app
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ env.IMAGE_NAME }}:v${{ steps.version.outputs.version }}
+          docker push ${{ env.IMAGE_NAME }}:latest
+
+      - name: Image pushed successfully
+        run: echo "✅ Docker image pushed to PRO repository: ${{ env.IMAGE_NAME }}:v${{ steps.version.outputs.version }}"

@@ -1,5 +1,5 @@
-using zeferini.person.front.blazor..Components;
-using first.Services;
+using zeferini.person.front.blazor.Components;
+using zeferini.person.front.blazor.Services;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);

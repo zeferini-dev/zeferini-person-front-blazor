@@ -1,0 +1,78 @@
+name: DEV - Build, Test & Docker
+
+on:
+  push:
+    branches:
+      - develop
+
+env:
+  REGISTRY: dockerhub
+  IMAGE_NAME: zeferinidotdev/zeferini-person-front-blazor-dev
+  DOTNET_VERSION: 8.0.x
+  SOLUTION_PATH: src/zeferini-person-front-blazor/zeferini-person-front-blazor.sln
+
+jobs:
+  build-test:
+    name: Build & Test (DEV)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Clean NuGet cache
+        run: dotnet nuget locals all --clear
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+
+      - name: Test (without coverage)
+        run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+
+  publish-docker:
+    name: Build & Push Docker (DEV)
+    runs-on: ubuntu-latest
+    needs: build-test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set Docker tag
+        id: docker_tag
+        run: |
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          echo "tag=dev-${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DEV_DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DEV_DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --no-cache \
+            -t ${{ env.IMAGE_NAME }}:${{ steps.docker_tag.outputs.tag }} \
+            -t ${{ env.IMAGE_NAME }}:latest \
+            -f src/zeferini-person-front-blazor/app/Dockerfile \
+            src/zeferini-person-front-blazor/app
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ env.IMAGE_NAME }}:${{ steps.docker_tag.outputs.tag }}
+          docker push ${{ env.IMAGE_NAME }}:latest
+
+      - name: Image pushed successfully
+        run: echo "✅ Docker image pushed to ${{ env.IMAGE_NAME }}:${{ steps.docker_tag.outputs.tag }}"
