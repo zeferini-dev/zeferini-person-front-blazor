@@ -119,7 +119,7 @@ jobs:
             -t ${{ env.IMAGE_NAME }}:hom-${{ steps.version.outputs.version }} \
             -t ${{ env.IMAGE_NAME }}:hom-latest \
             -f src/zeferini-person-front-blazor/zeferini-person-front-blazor/Dockerfile \
-            src/zeferini-person-front-blazor/zeferini-person-front-blazor
+            .
 
       - name: Push Docker image
         run: |
