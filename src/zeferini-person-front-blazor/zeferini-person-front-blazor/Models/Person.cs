@@ -1,4 +1,4 @@
-namespace first.Models;
+namespace zeferini.person.front.blazor.Models;
 
 public class Person
 {

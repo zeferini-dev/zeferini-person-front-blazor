@@ -2,7 +2,7 @@ using System.Net.Http.Json;
 using first.Models;
 using Microsoft.Extensions.Options;
 
-namespace first.Services;
+namespace zeferini.person.front.blazor.Services;
 
 /// <summary>
 /// Serviço para gerenciar operações CRUD de Pessoa

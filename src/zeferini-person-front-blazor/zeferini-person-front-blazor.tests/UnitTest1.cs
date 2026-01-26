@@ -1,4 +1,4 @@
-﻿namespace zeferini_person_front_blazor.tests
+﻿namespace zeferini.person.front.blazor.tests
 {
     public class UnitTest1
     {

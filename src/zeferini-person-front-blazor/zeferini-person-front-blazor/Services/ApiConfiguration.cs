@@ -1,4 +1,4 @@
-namespace first.Services;
+namespace zeferini.person.front.blazor.Services;
 
 /// <summary>
 /// Configuração das URLs das APIs via Gateway
