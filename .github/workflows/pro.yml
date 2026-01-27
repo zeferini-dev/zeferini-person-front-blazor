@@ -11,7 +11,7 @@ env:
   IMAGE_NAME: zeferinidotdev/zeferini-person-front-blazor
   DOTNET_VERSION: 10.0.x
   SOLUTION_PATH: src/zeferini-person-front-blazor/zeferini-person-front-blazor.sln
-  COVERAGE_OUTPUT: src/zeferini-person-front-blazor/TestResults/coverage.xml
+  COVERAGE_REPORT_DIR: src/zeferini-person-front-blazor/zeferini-person-front-blazor.tests/TestResults
 
 jobs:
   build-test-coverage:
@@ -39,13 +39,14 @@ jobs:
         run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
 
       - name: Test with Coverage
-        run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=${{ env.COVERAGE_OUTPUT }}
+        run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=${{ env.COVERAGE_REPORT_DIR }}/coverage.opencover.xml
 
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: coverage-reports
-          path: src/zeferini-person-front-blazor/TestResults/
+          path: ${{ env.COVERAGE_REPORT_DIR }}/
 
   publish-docker:
     name: Build & Push Docker (PRO)
