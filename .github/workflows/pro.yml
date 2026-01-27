@@ -129,4 +129,4 @@ jobs:
           docker push ${{ env.IMAGE_NAME }}:latest
 
       - name: Image pushed successfully
-        run: echo "✅ Docker image pushed to PRO repository: ${{ env.IMAGE_NAME }}:v${{ steps.version.outputs.version }}"
+        run: echo "Docker image pushed to PRO repository: ${{ env.IMAGE_NAME }}:v${{ steps.version.outputs.version }}"
