@@ -78,3 +78,36 @@ jobs:
 
       - name: Image pushed successfully
         run: echo "✅ Docker image pushed to ${{ env.IMAGE_NAME }}:${{ steps.docker_tag.outputs.tag }}"
+  create-pull-request:
+    name: Create Pull Request to Main
+    runs-on: ubuntu-latest
+    needs: publish-docker
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Merge develop to main"
+          title: "Merge develop to main - Build #${{ github.run_number }}"
+          body: |
+            ## Automated Merge from Develop
+            
+            This PR merges the latest changes from the develop branch into main.
+            
+            **Build Details:**
+            - Run Number: ${{ github.run_number }}
+            - Commit: ${{ github.sha }}
+            - Triggered by: ${{ github.event_name }}
+            
+            **Changes Summary:**
+            - Build and tests passed
+            - Docker image published successfully
+          branch: develop
+          base: main
+          delete-branch: false
