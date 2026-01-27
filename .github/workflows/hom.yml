@@ -130,4 +130,4 @@ jobs:
           docker push ${{ env.IMAGE_NAME }}:hom-latest
 
       - name: Image pushed successfully
-        run: echo "✅ Docker image pushed to HOM repository: ${{ env.IMAGE_NAME }}:hom-${{ steps.version.outputs.version }}"
+        run: echo "Docker image pushed to HOM repository ${{ env.IMAGE_NAME }}:hom-${{ steps.version.outputs.version }}"
